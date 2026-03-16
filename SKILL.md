@@ -1,6 +1,6 @@
 ---
 name: openclaw-setup
-description: OpenClaw 交互式配置向导。四步引导完成初始配置：权限开通 → 模型调优 → 能力扩展 → 安全加固。解决新部署 agent 权限过低无法工作、上下文窗口与模型不匹配导致卡死等常见问题。触发场景：(1) 用户说"配置openclaw"、"setup openclaw"、"初始化openclaw" (2) 用户说"配置模型"、"配置权限"、"配置上下文" (3) 用户说"添加MCP"、"配置MCP Server" (4) 用户说"openclaw安全配置"、"技能安全策略" (5) 用户提到"openclaw-setup"或"配置向导"。
+description: OpenClaw 交互式配置向导。四步引导完成初始配置：权限开通 → 模型调优 → 能力扩展 → 安全加固。解决新部署 agent 权限过低无法工作、上下文窗口与模型不匹配导致卡死等常见问题。触发场景：(1) 用户说"配置openclaw"、"setup openclaw"、"openclaw配置" (2) 用户说"配置模型"、"配置权限"、"配置上下文"、"调优模型" (3) 用户说"添加MCP"、"配置MCP Server"、"安装MCP" (4) 用户说"openclaw安全配置"、"技能安全策略"、"安全加固" (5) 用户提到"openclaw-setup"或"配置向导"。注意：这是 OpenClaw 部署的第二步，建议在 openclaw-soul BOOTSTRAP 完成后使用。
 ---
 
 # OpenClaw Setup — 交互式配置向导

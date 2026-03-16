@@ -1,0 +1,12 @@
+{
+  "name": "openclaw-setup",
+  "version": "1.0.0",
+  "description": "OpenClaw 交互式配置向导。四步引导完成初始配置：权限开通 → 模型调优 → 能力扩展 → 安全加固。解决新部署 agent 权限过低无法工作、上下文窗口与模型不匹配导致卡死等常见问题。",
+  "author": "Kianzzz",
+  "repository": "https://github.com/Kianzzz/openclaw-setup",
+  "license": "MIT",
+  "tags": ["openclaw", "setup", "configuration", "permissions", "models"],
+  "requires": {
+    "openclaw": ">=2026.3.0"
+  }
+}

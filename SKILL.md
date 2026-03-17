@@ -309,13 +309,15 @@ npm install -g clawhub
 推荐安装的技能：
   1. evoclaw — 自我进化身份框架（openclaw-soul 核心依赖）
   2. self-improving — 自我反思和学习系统（openclaw-soul 核心依赖）
+  3. multi-search-engine — 多平台搜索引擎（Google、Bing、DuckDuckGo 等，比单一搜索更强大）
 
 确认后执行：
   clawhub install evoclaw
   clawhub install self-improving
+  clawhub install multi-search-engine
 ```
 
-如果 openclaw-soul 检测到已安装 → 跳过此推荐。
+如果 openclaw-soul 检测到已安装 evoclaw 和 self-improving → 跳过这两个，只推荐 multi-search-engine。
 
 ### §5b MCP Servers
 

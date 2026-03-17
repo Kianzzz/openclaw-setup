@@ -304,20 +304,30 @@ AskUserQuestion:
 npm install -g clawhub
 ```
 
-**clawhub 可用** → 展示推荐技能：
-```
-推荐安装的技能：
-  1. evoclaw — 自我进化身份框架（openclaw-soul 核心依赖）
-  2. self-improving — 自我反思和学习系统（openclaw-soul 核心依赖）
-  3. multi-search-engine — 多平台搜索引擎（Google、Bing、DuckDuckGo 等，比单一搜索更强大）
+**clawhub 可用** → 使用 AskUserQuestion 让用户选择：
 
-确认后执行：
-  clawhub install evoclaw
-  clawhub install self-improving
-  clawhub install multi-search-engine
+```
+AskUserQuestion:
+  question: "选择要安装的 clawhub 技能（可多选）："
+  header: "Skills"
+  multiSelect: true
+  options:
+    - label: "evoclaw"
+      description: "自我进化身份框架（openclaw-soul 核心依赖）"
+    - label: "self-improving"
+      description: "自我反思和学习系统（openclaw-soul 核心依赖）"
+    - label: "multi-search-engine"
+      description: "多平台搜索引擎（Google、Bing、DuckDuckGo 等）"
 ```
 
-如果 openclaw-soul 检测到已安装 evoclaw 和 self-improving → 跳过这两个，只推荐 multi-search-engine。
+用户选择后，逐个执行安装：
+```bash
+clawhub install <selected-skill>
+```
+
+安装前告知："正在安装 {skill}，可能需要 10-30 秒，请稍候..."
+
+如果 openclaw-soul 检测到已安装 evoclaw 和 self-improving → 从选项中移除这两个，只显示 multi-search-engine。
 
 ### §5b MCP Servers
 

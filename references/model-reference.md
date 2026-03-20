@@ -2,7 +2,7 @@
 
 ## 常见模型一览
 
-| 模型 | 提供商 | 上下文窗口 | 推荐 maxTokens | 定价档位 | 特点 |
+| 模型 | 提供商 | 上下文窗口 | 推荐 contextTokens | 定价档位 | 特点 |
 |------|--------|-----------|---------------|---------|------|
 | claude-sonnet-4-5 | Anthropic | 200K | 128K | $$ | 性价比首选，推理强 |
 | claude-opus-4 | Anthropic | 200K | 128K | $$$$ | 最高质量，复杂任务 |
@@ -18,14 +18,14 @@
 
 ---
 
-## maxTokens 计算原则
+## contextTokens 计算原则
 
-`maxTokens` 控制单次对话的最大 token 数。设置过高会浪费额度（模型倾向填满窗口），设置过低会导致 agent 在复杂任务中途截断。
+`contextTokens` 控制单次对话的最大 token 数。设置过高会浪费额度（模型倾向填满窗口），设置过低会导致 agent 在复杂任务中途截断。
 
 ### 推荐公式
 
 ```
-推荐 maxTokens = 模型上下文窗口 × 60~75%
+推荐 contextTokens = 模型上下文窗口 × 60~75%
 ```
 
 **为什么不是 100%？**
@@ -43,7 +43,7 @@
 
 **配置命令**：
 ```bash
-openclaw config set agents.defaults.maxTokens 128000
+openclaw config set agents.defaults.contextTokens 128000
 ```
 
 ---
@@ -58,11 +58,11 @@ openclaw config set agents.defaults.maxTokens 128000
 {
   "agents": {
     "defaults": {
-      "models": {
+      "model": {
         "primary": "claude-sonnet-4-5",
-        "fallback": ["claude-haiku-4-5", "gpt-4o-mini"]
+        "fallbacks": ["claude-haiku-4-5", "gpt-4o-mini"]
       },
-      "maxTokens": 128000
+      "contextTokens": 128000
     }
   }
 }
@@ -78,11 +78,11 @@ openclaw config set agents.defaults.maxTokens 128000
 {
   "agents": {
     "defaults": {
-      "models": {
+      "model": {
         "primary": "claude-sonnet-4-5",
-        "fallback": ["gemini-2.5-flash"]
+        "fallbacks": ["gemini-2.5-flash"]
       },
-      "maxTokens": 128000
+      "contextTokens": 128000
     }
   }
 }
@@ -97,11 +97,11 @@ openclaw config set agents.defaults.maxTokens 128000
 {
   "agents": {
     "defaults": {
-      "models": {
+      "model": {
         "primary": "claude-haiku-4-5",
-        "fallback": ["gpt-4o-mini", "gemini-2.5-flash"]
+        "fallbacks": ["gpt-4o-mini", "gemini-2.5-flash"]
       },
-      "maxTokens": 80000
+      "contextTokens": 80000
     }
   }
 }
@@ -114,24 +114,24 @@ openclaw config set agents.defaults.maxTokens 128000
 
 ## 压缩策略（Compaction）
 
-当对话接近 maxTokens 上限时，OpenClaw 会压缩早期对话以释放上下文空间。
+当对话接近 contextTokens 上限时，OpenClaw 会压缩早期对话以释放上下文空间。
 
 ### 策略选项
 
 | 策略 | 说明 | 适用场景 |
 |------|------|---------|
-| `summarize` | 将旧对话摘要为简短总结 | 通用（推荐） |
+| `default` | 将旧对话摘要为简短总结 | 通用（推荐） |
 | `truncate` | 直接截断最早的对话 | 不需要历史的简单任务 |
 | `sliding` | 滑动窗口，保留最近 N 轮 | 固定格式的重复性任务 |
 
 ### 配置示例
 
 ```bash
-# 推荐：摘要压缩
-openclaw config set compaction.strategy summarize
-openclaw config set compaction.threshold 0.75
+# 推荐：默认压缩模式
+openclaw config set agents.defaults.compaction.mode default
+openclaw config set agents.defaults.compaction.maxHistoryShare 0.5
 
-# threshold: 占用比例达到此值时触发压缩（0.75 = 75%）
+# maxHistoryShare: 历史对话最多占上下文的比例（0.5 = 50%）
 ```
 
 ### 压缩模型
@@ -139,7 +139,7 @@ openclaw config set compaction.threshold 0.75
 压缩操作本身也需要调用模型。可以指定一个轻量模型来降低压缩成本：
 
 ```bash
-openclaw config set compaction.model claude-haiku-4-5
+openclaw config set agents.defaults.compaction.model claude-haiku-4-5
 ```
 
 如果不指定，默认使用 primary 模型进行压缩（成本较高）。
@@ -162,9 +162,9 @@ openclaw config set compaction.model claude-haiku-4-5
 ### 配置示例
 
 ```bash
-openclaw config set heartbeat.every 1h
-openclaw config set heartbeat.target last
-openclaw config set heartbeat.directPolicy allow
+openclaw config set agents.defaults.heartbeat.every 1h
+openclaw config set agents.defaults.heartbeat.target last
+openclaw config set agents.defaults.heartbeat.directPolicy allow
 ```
 
 ### 心跳模型节省策略
@@ -173,10 +173,10 @@ openclaw config set heartbeat.directPolicy allow
 
 ```bash
 # 心跳用便宜模型
-openclaw config set heartbeat.model claude-haiku-4-5
+openclaw config set agents.defaults.heartbeat.model claude-haiku-4-5
 
 # 主对话用高质量模型
-openclaw config set agents.defaults.models.primary claude-sonnet-4-5
+openclaw config set agents.defaults.model.primary claude-sonnet-4-5
 ```
 
 **成本对比**（假设每小时 1 次心跳，每次约 2000 tokens）：
@@ -194,7 +194,7 @@ openclaw config set agents.defaults.models.primary claude-sonnet-4-5
 {
   "agents": {
     "defaults": {
-      "models": {
+      "model": {
         "primary": "claude-sonnet-4-5"
       },
       "proxy": {

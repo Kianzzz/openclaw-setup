@@ -120,21 +120,26 @@ def check_permissions(config):
 def check_models(config):
     """Extract model configuration."""
     if not config:
-        return {"primary": None, "fallback": [], "maxTokens": None}
+        return {"primary": None, "fallbacks": [], "contextTokens": None}
     agents = config.get("agents", {})
     defaults = agents.get("defaults", {})
-    models = defaults.get("models", {})
+    model = defaults.get("model")
 
-    primary = models.get("primary") or models.get("default") or defaults.get("model")
-    fallback_raw = models.get("fallback", [])
+    # model can be a string or dict with primary/fallbacks
+    if isinstance(model, dict):
+        primary = model.get("primary")
+        fallback_raw = model.get("fallbacks", [])
+    else:
+        primary = model
+        fallback_raw = []
     if isinstance(fallback_raw, str):
         fallback_raw = [fallback_raw]
-    max_tokens = defaults.get("maxTokens") or defaults.get("max_tokens") or config.get("maxTokens")
+    context_tokens = defaults.get("contextTokens")
 
     return {
         "primary": primary,
-        "fallback": fallback_raw,
-        "maxTokens": max_tokens,
+        "fallbacks": fallback_raw,
+        "contextTokens": context_tokens,
     }
 
 
@@ -142,17 +147,14 @@ def check_compaction(config):
     """Check context compaction settings."""
     if not config:
         return {"configured": False}
-    compaction = config.get("compaction", {})
-    if not compaction:
-        # Also check under agents.defaults
-        agents = config.get("agents", {})
-        compaction = agents.get("defaults", {}).get("compaction", {})
+    agents = config.get("agents", {})
+    compaction = agents.get("defaults", {}).get("compaction", {})
     if not compaction:
         return {"configured": False}
     return {
         "configured": True,
-        "strategy": compaction.get("strategy"),
-        "threshold": compaction.get("threshold"),
+        "mode": compaction.get("mode"),
+        "maxHistoryShare": compaction.get("maxHistoryShare"),
         "model": compaction.get("model"),
     }
 
@@ -161,7 +163,8 @@ def check_heartbeat(config):
     """Check heartbeat configuration."""
     if not config:
         return {"configured": False}
-    hb = config.get("heartbeat", {})
+    agents = config.get("agents", {})
+    hb = agents.get("defaults", {}).get("heartbeat", {})
     if not hb or not hb.get("every"):
         return {"configured": False}
     return {
@@ -206,21 +209,27 @@ def check_security(config):
     if not config:
         return {
             "dm_policy": None,
-            "spending_limit": None,
             "thinking": None,
+            "skills_config": None,
             "log_sanitize": None,
-            "skill_policy": None,
         }
+    agents = config.get("agents", {})
+    defaults = agents.get("defaults", {})
     security = config.get("security", {})
-    dm = config.get("dm", {})
-    thinking = config.get("thinking", {})
+    channels = config.get("channels", {})
+
+    # dm_policy: look at channel-level dmPolicy
+    dm_policy = None
+    for ch_name, ch_conf in channels.items():
+        if isinstance(ch_conf, dict) and ch_conf.get("dmPolicy"):
+            dm_policy = ch_conf.get("dmPolicy")
+            break
 
     return {
-        "dm_policy": dm.get("policy") or security.get("dmPolicy"),
-        "spending_limit": security.get("spendingLimit") or config.get("spendingLimit"),
-        "thinking": thinking.get("level") or security.get("thinkingLevel"),
+        "dm_policy": dm_policy,
+        "thinking": defaults.get("thinkingDefault"),
+        "skills_config": config.get("skills", {}).get("allowBundled"),
         "log_sanitize": security.get("logSanitize"),
-        "skill_policy": security.get("skillPolicy"),
     }
 
 

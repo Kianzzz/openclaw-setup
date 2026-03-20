@@ -9,7 +9,7 @@
 只允许安装用户自己创建或本地已有的技能。禁止从 clawhub 或任何远程来源安装。
 
 ```bash
-openclaw config set security.skillPolicy self-build-only
+# Skill control is managed via skills.allowBundled and skills.entries.<name>.enabled
 ```
 
 **适用场景**：高安全要求环境、不信任第三方技能、仅使用自建技能。
@@ -24,7 +24,7 @@ openclaw config set security.skillPolicy self-build-only
 允许从 clawhub 安装技能，但必须先审核。agent 下载技能后不立即启用，而是先运行安全检查，展示审核报告，等用户确认后才安装。
 
 ```bash
-openclaw config set security.skillPolicy clawhub-audit
+# Skill control is managed via skills.allowBundled and skills.entries.<name>.enabled
 ```
 
 **适用场景**：日常使用，在便利性和安全性之间取得平衡。
@@ -38,7 +38,7 @@ openclaw config set security.skillPolicy clawhub-audit
 信任 clawhub 上标记为 verified 的技能，自动安装。未 verified 的技能仍需审核。
 
 ```bash
-openclaw config set security.skillPolicy trust-verified
+# Skill control is managed via skills.allowBundled and skills.entries.<name>.enabled
 ```
 
 **适用场景**：追求效率，信任 clawhub 的审核流程。
@@ -191,17 +191,14 @@ openclaw config set security.skillPolicy trust-verified
 # 查看当前安全策略
 openclaw config get security
 
-# 设置技能安装策略
-openclaw config set security.skillPolicy <self-build-only|clawhub-audit|trust-verified>
+# Skill 控制说明
+# Skill control is managed via skills.allowBundled and skills.entries.<name>.enabled
 
 # 设置 DM 策略（谁可以给 agent 发消息）
-openclaw config set dm.policy <allowlist|open|blocklist>
-
-# 设置 API 限额（月度美元上限）
-openclaw config set security.spendingLimit 50
+openclaw config set channels.<channel>.dmPolicy <pairing|allowlist|open|disabled>
 
 # 设置 Thinking 级别
-openclaw config set thinking.level <none|low|medium|high>
+openclaw config set agents.defaults.thinkingDefault <off|minimal|low|medium|high|xhigh|adaptive>
 
 # 设置日志脱敏
 openclaw config set security.logSanitize true
